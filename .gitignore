@@ -1,0 +1,8 @@
+.vercel
+node_modules/
+build/
+prisma/dev.db
+prisma/dev.db-journal
+.env
+yarn-debug.log*
+yarn-error.log*

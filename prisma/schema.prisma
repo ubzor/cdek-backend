@@ -1,0 +1,42 @@
+datasource db {
+    provider = "sqlite"
+    url      = "file:./dev.db"
+}
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
+}
+
+model PickupPoint {
+    id                    Int     @id @default(autoincrement())
+    uuid                  String  @unique
+    code                  String
+    name                  String
+    address_comment       String
+    work_time             String
+    email                 String?
+    note                  String
+    type                  String
+    owner_code            String
+    take_only             String
+    is_handout            String
+    is_dressing_room      String
+    have_cashless         String
+    have_cash             String
+    allowed_cod           String
+    site                  String?
+    weight_min            String
+    weight_max            String
+    fulfillment           String
+    phones                Json
+    work_time_list        Json
+    nearest_station       String
+    nearest_metro_station String?
+    is_reception          Int
+    is_ltl                Int
+    office_image_list     Json?
+    dimensions            Json
+    location              Json
+    work_time_exceptions  Json?
+}
