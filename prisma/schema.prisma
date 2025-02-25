@@ -8,35 +8,121 @@ generator client {
     previewFeatures = ["driverAdapters"]
 }
 
-model PickupPoint {
-    id                    Int     @id @default(autoincrement())
-    uuid                  String  @unique
-    code                  String
-    name                  String
-    address_comment       String
-    work_time             String
-    email                 String?
-    note                  String
-    type                  String
-    owner_code            String
-    take_only             String
-    is_handout            String
-    is_dressing_room      String
-    have_cashless         String
-    have_cash             String
-    allowed_cod           String
-    site                  String?
-    weight_min            String
-    weight_max            String
-    fulfillment           String
-    phones                Json
-    work_time_list        Json
-    nearest_station       String
-    nearest_metro_station String?
-    is_reception          Int
-    is_ltl                Int
-    office_image_list     Json?
-    dimensions            Json
-    location              Json
-    work_time_exceptions  Json?
+model DeliveryPoint {
+    uuid String @id
+
+    code                String
+    name                String
+    addressComment      String?
+    nearestStation      String?
+    nearestMetroStation String?
+    workTime            String
+
+    phones Phone[]
+
+    email     String?
+    note      String?
+    type      String
+    ownerCode String
+
+    takeOnly              Boolean
+    isHandout             Boolean
+    isReception           Boolean
+    isDressingRoom        Boolean
+    isMarketplace         Boolean?
+    isLtl                 Boolean?
+    haveCashless          Boolean
+    haveCash              Boolean
+    haveFastPaymentSystem Boolean
+    allowedCod            Boolean
+
+    site String?
+
+    officeImages       OfficeImage[]
+    workTimes          WorkTime[]
+    workTimeExceptions WorkTimeException[]
+
+    weightMin Int?
+    weightMax Int?
+
+    dimensions Dimensions[]
+    location   Location?
+
+    distance Int?
+
+    fulfillment Boolean
+}
+
+model Phone {
+    id String @id @default(uuid())
+
+    number     String
+    additional String?
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String
+}
+
+model OfficeImage {
+    id String @id @default(uuid())
+
+    number Int?
+    url    String
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String
+}
+
+model WorkTime {
+    id String @id @default(uuid())
+
+    day  Int
+    time String
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String
+}
+
+model WorkTimeException {
+    id String @id @default(uuid())
+
+    dateStart String
+    dateEnd   String
+    timeStart String?
+    timeEnd   String?
+    isWorking Boolean
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String
+}
+
+model Dimensions {
+    id String @id @default(uuid())
+
+    width  Int
+    height Int
+    depth  Int
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String
+}
+
+model Location {
+    id String @id @default(uuid())
+
+    countryCode String
+    regionCode  Int
+    region      String
+    cityCode    Int
+    city        String
+    fiasGuid    String?
+    postalCode  String?
+    longitude   Float
+    latitude    Float
+    address     String
+    addressFull String
+    cityUuid    String?
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @unique
 }

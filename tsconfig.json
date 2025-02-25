@@ -5,7 +5,8 @@
         "strict": true,
         "esModuleInterop": true,
         "outDir": "./build",
-        "rootDir": "./"
+        "rootDir": "./",
+        "typeRoots": ["./node_modules/@types", "./types"]
     },
     "include": ["src"]
 }
