@@ -1,6 +1,6 @@
 datasource db {
-    provider = "sqlite"
-    url      = "file:./dev.db"
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -9,7 +9,7 @@ generator client {
 }
 
 model DeliveryPoint {
-    uuid String @id
+    uuid String @id @db.Uuid
 
     code                String
     name                String
@@ -51,40 +51,42 @@ model DeliveryPoint {
     distance Int?
 
     fulfillment Boolean
+
+    geoData GeoData?
 }
 
 model Phone {
-    id String @id @default(uuid())
+    id String @id @default(uuid()) @db.Uuid
 
     number     String
     additional String?
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
-    deliveryPointId String
+    deliveryPointId String        @db.Uuid
 }
 
 model OfficeImage {
-    id String @id @default(uuid())
+    id String @id @default(uuid()) @db.Uuid
 
     number Int?
     url    String
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
-    deliveryPointId String
+    deliveryPointId String        @db.Uuid
 }
 
 model WorkTime {
-    id String @id @default(uuid())
+    id String @id @default(uuid()) @db.Uuid
 
     day  Int
     time String
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
-    deliveryPointId String
+    deliveryPointId String        @db.Uuid
 }
 
 model WorkTimeException {
-    id String @id @default(uuid())
+    id String @id @default(uuid()) @db.Uuid
 
     dateStart String
     dateEnd   String
@@ -93,26 +95,26 @@ model WorkTimeException {
     isWorking Boolean
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
-    deliveryPointId String
+    deliveryPointId String        @db.Uuid
 }
 
 model Dimensions {
-    id String @id @default(uuid())
+    id String @id @default(uuid()) @db.Uuid
 
     width  Int
     height Int
     depth  Int
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
-    deliveryPointId String
+    deliveryPointId String        @db.Uuid
 }
 
 model Location {
-    id String @id @default(uuid())
+    id String @id @default(uuid()) @db.Uuid
 
     countryCode String
     regionCode  Int
-    region      String
+    region      String?
     cityCode    Int
     city        String
     fiasGuid    String?
@@ -124,5 +126,14 @@ model Location {
     cityUuid    String?
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
-    deliveryPointId String        @unique
+    deliveryPointId String        @unique @db.Uuid
+}
+
+model GeoData {
+    id String @id @default(uuid()) @db.Uuid
+
+    coordinates Unsupported("geography(Point, 4326)")
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @unique @db.Uuid
 }

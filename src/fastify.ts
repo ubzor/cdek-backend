@@ -1,11 +1,9 @@
 import Fastify from 'fastify'
-import dotenv from 'dotenv'
+import 'dotenv/config'
 
-import DeliveryPointsUpdater from './deliveryPointsUpdater'
+import DeliveryPointsUpdater from './classes/DeliveryPointsUpdater'
 import prisma from './prisma'
 import cdekApi from './cdekApi'
-
-dotenv.config()
 
 const fastify = Fastify({ logger: process.env.NODE_ENV !== 'production' })
 

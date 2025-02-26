@@ -61,7 +61,7 @@ export interface CdekDeliveryPoint {
     location: {
         country_code: string
         region_code: number
-        region: string
+        region?: string
         city_code: number
         city: string
         fias_guid?: string
