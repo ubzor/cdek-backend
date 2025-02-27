@@ -1,8 +1,0 @@
-{
-    "functions": {
-        "api/webhook.ts": {
-            "memory": 1024,
-            "maxDuration": 20
-        }
-    }
-}

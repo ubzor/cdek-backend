@@ -1,7 +1,7 @@
 import type { CdekDeliveryPoint } from '../../types/CdekDeliveryPoint'
 
 export const transformDeliveryPointToPrismaObjects = (dp: CdekDeliveryPoint) => {
-    const pickupPoint = {
+    const deliveryPoint = {
         uuid: dp.uuid,
         code: dp.code,
         name: dp.name,
@@ -90,7 +90,7 @@ export const transformDeliveryPointToPrismaObjects = (dp: CdekDeliveryPoint) => 
     }
 
     return {
-        pickupPoint,
+        deliveryPoint,
         phones,
         officeImages,
         workTimes,
@@ -105,7 +105,7 @@ export const transformDeliveryPointsToPrismaObjectBatch = (dps: CdekDeliveryPoin
         .map((dp) => transformDeliveryPointToPrismaObjects(dp))
         .reduce(
             (acc, item) => ({
-                pickupPoints: [...acc.pickupPoints, item.pickupPoint],
+                deliveryPoints: [...acc.deliveryPoints, item.deliveryPoint],
                 phones: [...acc.phones, ...item.phones],
                 officeImages: [...acc.officeImages, ...item.officeImages],
                 workTimes: [...acc.workTimes, ...item.workTimes],
@@ -117,9 +117,9 @@ export const transformDeliveryPointsToPrismaObjectBatch = (dps: CdekDeliveryPoin
                 locations: [...acc.locations, item.location]
             }),
             {
-                pickupPoints: [] as ReturnType<
+                deliveryPoints: [] as ReturnType<
                     typeof transformDeliveryPointToPrismaObjects
-                >['pickupPoint'][],
+                >['deliveryPoint'][],
                 phones: [] as ReturnType<
                     typeof transformDeliveryPointToPrismaObjects
                 >['phones'],

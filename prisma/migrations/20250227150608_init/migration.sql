@@ -1,6 +1,9 @@
 -- PostGIS
 CREATE EXTENSION IF NOT EXISTS postgis;
 
+-- UUID Generator V4
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- CreateTable
 CREATE TABLE "DeliveryPoint" (
     "uuid" UUID NOT NULL,
@@ -35,37 +38,37 @@ CREATE TABLE "DeliveryPoint" (
 
 -- CreateTable
 CREATE TABLE "Phone" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL,
     "number" TEXT NOT NULL,
     "additional" TEXT,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "Phone_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Phone_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
 CREATE TABLE "OfficeImage" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL,
     "number" INTEGER,
     "url" TEXT NOT NULL,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "OfficeImage_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "OfficeImage_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
 CREATE TABLE "WorkTime" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL,
     "day" INTEGER NOT NULL,
     "time" TEXT NOT NULL,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "WorkTime_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "WorkTime_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
 CREATE TABLE "WorkTimeException" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL,
     "dateStart" TEXT NOT NULL,
     "dateEnd" TEXT NOT NULL,
     "timeStart" TEXT,
@@ -73,23 +76,23 @@ CREATE TABLE "WorkTimeException" (
     "isWorking" BOOLEAN NOT NULL,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "WorkTimeException_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "WorkTimeException_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
 CREATE TABLE "Dimensions" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL,
     "width" INTEGER NOT NULL,
     "height" INTEGER NOT NULL,
     "depth" INTEGER NOT NULL,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "Dimensions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Dimensions_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
 CREATE TABLE "Location" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL,
     "countryCode" TEXT NOT NULL,
     "regionCode" INTEGER NOT NULL,
     "region" TEXT,
@@ -104,16 +107,16 @@ CREATE TABLE "Location" (
     "cityUuid" TEXT,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "Location_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Location_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateTable
 CREATE TABLE "GeoData" (
-    "id" UUID NOT NULL,
+    "uuid" UUID NOT NULL DEFAULT uuid_generate_v4(),
     "coordinates" geography(Point, 4326) NOT NULL,
     "deliveryPointId" UUID NOT NULL,
 
-    CONSTRAINT "GeoData_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "GeoData_pkey" PRIMARY KEY ("uuid")
 );
 
 -- CreateIndex

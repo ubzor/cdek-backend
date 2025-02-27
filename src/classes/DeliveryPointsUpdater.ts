@@ -2,8 +2,9 @@ import 'dotenv/config'
 import cliProgress from 'cli-progress'
 
 import type { PrismaClient } from '@prisma/client'
+import { createGeoLocation } from '@prisma/client/sql'
 
-import { transformDeliveryPointsToPrismaObjectBatch } from '../transformers/deliveryPoints'
+import { transformDeliveryPointsToPrismaObjectBatch } from '../utils/transformers'
 
 import type { CdekApi } from '../../types/CdekApi'
 import type { CdekDeliveryPoint } from '../../types/CdekDeliveryPoint'
@@ -14,13 +15,15 @@ export default class DeliveryPointsUpdater {
 
     #deliveryPoints: CdekDeliveryPoint[] | undefined
 
+    #batchSize = 50
+
     constructor(cdekApi: CdekApi, prisma: PrismaClient) {
         ;[this.#cdekApi, this.#prisma] = [cdekApi, prisma]
     }
 
     async #batchCreateDeliveryPoints(batch: CdekDeliveryPoint[]): Promise<number> {
         const {
-            pickupPoints,
+            deliveryPoints,
             dimensions,
             locations,
             officeImages,
@@ -29,17 +32,32 @@ export default class DeliveryPointsUpdater {
             workTimes
         } = transformDeliveryPointsToPrismaObjectBatch(batch)
 
-        await this.#prisma.deliveryPoint.createMany({ data: pickupPoints })
-        await this.#prisma.phone.createMany({ data: phones })
-        await this.#prisma.officeImage.createMany({ data: officeImages })
-        await this.#prisma.workTime.createMany({ data: workTimes })
-        await this.#prisma.workTimeException.createMany({
-            data: workTimeExceptions
-        })
-        await this.#prisma.dimensions.createMany({ data: dimensions })
-        await this.#prisma.location.createMany({ data: locations })
+        await this.#prisma.deliveryPoint.createMany({ data: deliveryPoints })
 
-        return pickupPoints.length
+        await Promise.all([
+            await this.#prisma.phone.createMany({ data: phones }),
+            await this.#prisma.officeImage.createMany({ data: officeImages }),
+            await this.#prisma.workTime.createMany({ data: workTimes }),
+            await this.#prisma.workTimeException.createMany({
+                data: workTimeExceptions
+            }),
+            await this.#prisma.dimensions.createMany({ data: dimensions }),
+            await this.#prisma.location.createMany({ data: locations }),
+
+            await (async () => {
+                for (const location of locations) {
+                    await this.#prisma.$queryRawTyped(
+                        createGeoLocation(
+                            location.deliveryPointId,
+                            location.longitude,
+                            location.latitude
+                        )
+                    )
+                }
+            })()
+        ])
+
+        return deliveryPoints.length
     }
 
     // Synchronize delivery points with the database.
@@ -80,11 +98,14 @@ export default class DeliveryPointsUpdater {
             const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
             bar.start(deliveryPointsToCreate.length, 0)
 
-            for (let i = 0; i < deliveryPointsToCreate.length; i += 100) {
-                const pickupPoints = deliveryPointsToCreate.slice(i, i + 100)
-                await this.#batchCreateDeliveryPoints(pickupPoints)
+            for (let i = 0; i < deliveryPointsToCreate.length; i += this.#batchSize) {
+                const deliveryPoints = deliveryPointsToCreate.slice(
+                    i,
+                    i + this.#batchSize
+                )
+                await this.#batchCreateDeliveryPoints(deliveryPoints)
 
-                bar.increment(pickupPoints.length)
+                bar.increment(deliveryPoints.length)
             }
 
             bar.stop()
@@ -98,16 +119,19 @@ export default class DeliveryPointsUpdater {
             const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
             bar.start(deliveryPointsToUpdate.length, 0)
 
-            for (let i = 0; i < deliveryPointsToUpdate.length; i += 100) {
-                const pickupPoints = deliveryPointsToUpdate.slice(i, i + 100)
+            for (let i = 0; i < deliveryPointsToUpdate.length; i += this.#batchSize) {
+                const deliveryPoints = deliveryPointsToUpdate.slice(
+                    i,
+                    i + this.#batchSize
+                )
 
                 await this.#prisma.deliveryPoint.deleteMany({
-                    where: { uuid: { in: pickupPoints.map((dp) => dp.uuid) } }
+                    where: { uuid: { in: deliveryPoints.map((dp) => dp.uuid) } }
                 })
 
-                await this.#batchCreateDeliveryPoints(pickupPoints)
+                await this.#batchCreateDeliveryPoints(deliveryPoints)
 
-                bar.increment(pickupPoints.length)
+                bar.increment(deliveryPoints.length)
             }
 
             bar.stop()

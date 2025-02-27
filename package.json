@@ -1,13 +1,13 @@
 {
     "name": "cdek-backend",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "license": "MIT",
     "scripts": {
-        "dev": "ts-node-dev src/fastify.ts",
+        "dev": "ts-node-dev src/app.ts",
         "build": "tsc",
-        "start": "node dist/fastify.js",
+        "start": "node dist/app.js",
         "prisma:migrate": "prisma migrate dev",
-        "postinstall": "prisma generate"
+        "postinstall": "prisma generate --sql"
     },
     "dependencies": {
         "@prisma/adapter-pg": "^6.4.1",
@@ -15,12 +15,15 @@
         "cli-progress": "^3.12.0",
         "dotenv": "^16.4.7",
         "fastify": "^5.2.1",
-        "pg": "^8.13.3"
+        "node-cron": "^3.0.3",
+        "pg": "^8.13.3",
+        "zod": "^3.24.2",
+        "zod_utilz": "^0.8.3"
     },
     "devDependencies": {
         "@types/cli-progress": "^3.11.6",
+        "@types/node-cron": "^3.0.11",
         "@types/pg": "^8.11.11",
-        "@vercel/node": "^5.1.8",
         "prisma": "^6.4.1",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.7.3"
