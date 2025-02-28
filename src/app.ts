@@ -13,8 +13,21 @@ if (!process.env.SERVER_HOST)
 if (!process.env.SERVER_PORT)
     throw new Error('SERVER_PORT must be provided in env variables')
 
-const updater = new DeliveryPointsUpdater(cdekApi, prisma)
+const updater = new DeliveryPointsUpdater(
+    cdekApi,
+    prisma,
+    process.env.NODE_ENV !== 'production',
+    process.env.UPDATER_BATCH_SIZE ? +process.env.UPDATER_BATCH_SIZE : undefined
+)
 
-cron.schedule('0 0 * * *', async () => await updater.run(), { timezone: 'Europe/Moscow' })
+cron.schedule(
+    process.env.UPDATER_CRON_SCHEDULE ?? '0 0 * * *',
+    async () => await updater.run(),
+    {
+        ...(process.env.UPDATER_CRON_TIMEZONE && {
+            timezone: process.env.UPDATER_CRON_TIMEZONE
+        })
+    }
+)
 
 start(process.env.SERVER_HOST, +process.env.SERVER_PORT)

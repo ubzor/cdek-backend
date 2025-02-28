@@ -1,6 +1,6 @@
 {
     "name": "cdek-backend",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "license": "MIT",
     "scripts": {
         "dev": "ts-node-dev src/app.ts",
@@ -10,18 +10,22 @@
         "postinstall": "prisma generate --sql"
     },
     "dependencies": {
+        "@fastify/postgres": "^6.0.2",
         "@prisma/adapter-pg": "^6.4.1",
         "@prisma/client": "^6.4.1",
         "cli-progress": "^3.12.0",
         "dotenv": "^16.4.7",
         "fastify": "^5.2.1",
+        "jsonstream": "^1.0.3",
         "node-cron": "^3.0.3",
         "pg": "^8.13.3",
+        "pg-query-stream": "^4.7.3",
         "zod": "^3.24.2",
         "zod_utilz": "^0.8.3"
     },
     "devDependencies": {
         "@types/cli-progress": "^3.11.6",
+        "@types/jsonstream": "^0.8.33",
         "@types/node-cron": "^3.0.11",
         "@types/pg": "^8.11.11",
         "prisma": "^6.4.1",

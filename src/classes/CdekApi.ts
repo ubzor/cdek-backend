@@ -5,13 +5,19 @@ export default class CdekApi {
     #cdekApiSecret: string
     #cdekAccessToken: string | undefined
 
-    constructor(cdekClientId: string, cdekApiSecret: string) {
-        ;[this.#cdekClientId, this.#cdekApiSecret] = [cdekClientId, cdekApiSecret]
+    #writeLogs: boolean
+
+    constructor(cdekClientId: string, cdekApiSecret: string, writeLogs: boolean = false) {
+        ;[this.#cdekClientId, this.#cdekApiSecret, this.#writeLogs] = [
+            cdekClientId,
+            cdekApiSecret,
+            writeLogs
+        ]
     }
 
     async #authorize() {
         try {
-            console.log('Authorizing with CDEK API...')
+            if (this.#writeLogs) console.log('Authorizing with CDEK API...')
 
             const response = await fetch('https://api.cdek.ru/v2/oauth/token', {
                 method: 'POST',
@@ -30,9 +36,10 @@ export default class CdekApi {
 
             this.#cdekAccessToken = (await response.json()).access_token
 
-            console.log('Sucessfully authorized with CDEK API')
+            if (this.#writeLogs) console.log('Sucessfully authorized with CDEK API')
         } catch (error: any) {
-            console.log(error)
+            if (this.#writeLogs) console.log(error)
+
             throw new Error('Failed to authorize with CDEK API')
         }
     }
@@ -41,7 +48,7 @@ export default class CdekApi {
         await this.#authorize()
 
         try {
-            console.log('Getting delivery points from CDEK API...')
+            if (this.#writeLogs) console.log('Getting delivery points from CDEK API...')
 
             const response = await fetch('https://api.cdek.ru/v2/deliverypoints', {
                 method: 'GET',
@@ -51,11 +58,12 @@ export default class CdekApi {
                 }
             })
 
-            console.log('Got delivery points from CDEK API')
+            if (this.#writeLogs) console.log('Got delivery points from CDEK API')
 
             return (await response.json()) as Array<CdekDeliveryPoint>
         } catch (error: any) {
-            console.log(error)
+            if (this.#writeLogs) console.log(error)
+
             throw new Error('Failed to get delivery points from CDEK API')
         }
     }

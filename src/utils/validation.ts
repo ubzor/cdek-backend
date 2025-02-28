@@ -10,33 +10,40 @@ export const validateObject = <T extends z.AnyZodObject>(schema: T, object: any)
     }
 }
 
-export const latitudeLongitudeValidationSchema = z
+const transformStringToFloat = (value: string, context: z.RefinementCtx) => {
+    const parsed = parseFloat(value)
+
+    if (isNaN(parsed)) {
+        context.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Not a number'
+        })
+
+        // This is a special symbol you can use to
+        // return early from the transform function.
+        // It has type `never` so it does not affect the
+        // inferred return type.
+        return z.NEVER
+    }
+
+    return parsed
+}
+
+export const longitudeValidationSchema = z
     .string()
-    .transform((value, context) => {
-        const parsed = parseFloat(value)
-
-        if (isNaN(parsed)) {
-            context.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: 'Not a number'
-            })
-
-            // This is a special symbol you can use to
-            // return early from the transform function.
-            // It has type `never` so it does not affect the
-            // inferred return type.
-            return z.NEVER
-        }
-
-        return parsed
-    })
+    .transform(transformStringToFloat)
     .refine((value) => value >= -180 && value <= 180, 'Must be between -180 and 180')
 
+export const latitudeValidationSchema = z
+    .string()
+    .transform(transformStringToFloat)
+    .refine((value) => value >= -90 && value <= 90, 'Must be between -90 and 90')
+
 export const boundingBoxValidationSchema = z.object({
-    minLongitude: latitudeLongitudeValidationSchema,
-    maxLongitude: latitudeLongitudeValidationSchema,
-    minLatitude: latitudeLongitudeValidationSchema,
-    maxLatitude: latitudeLongitudeValidationSchema
+    minLongitude: longitudeValidationSchema,
+    maxLongitude: longitudeValidationSchema,
+    minLatitude: latitudeValidationSchema,
+    maxLatitude: latitudeValidationSchema
 })
 
 export const uuidValidationSchema = z.string().uuid('Must be valid uuid')

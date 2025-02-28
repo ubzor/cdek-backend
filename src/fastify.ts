@@ -1,4 +1,7 @@
 import Fastify from 'fastify'
+import fastifyPostgres from '@fastify/postgres'
+import QueryStream from 'pg-query-stream'
+import { stringify } from 'jsonstream'
 import 'dotenv/config'
 
 import { getGeoLocations } from '@prisma/client/sql'
@@ -29,16 +32,25 @@ fastify.get<{
         return error
     }
 
+    const pgClient = await fastify.pg.connect()
+
     const { minLongitude, minLatitude, maxLongitude, maxLatitude } = data
 
-    const deliveryPoints = await prisma.$queryRawTyped(
-        getGeoLocations(minLongitude, minLatitude, maxLongitude, maxLatitude)
+    const sql = getGeoLocations(minLongitude, minLatitude, maxLongitude, maxLatitude).sql
+
+    const query = new QueryStream(
+        sql,
+        [minLongitude, minLatitude, maxLongitude, maxLatitude],
+        { highWaterMark: 50 }
     )
 
-    return deliveryPoints.map(({ coordinates, deliveryPointId, ...rest }) => ({
-        uuid: deliveryPointId,
-        ...rest
-    }))
+    const stream = pgClient.query(query)
+    stream.on('end', () => {
+        pgClient.release()
+    })
+
+    reply.header('Content-Type', 'application/octet-stream')
+    return reply.send(stream.pipe(stringify()))
 })
 
 fastify.get<{ Params: { uuid: string } }>(
@@ -104,12 +116,35 @@ fastify.get<{ Querystring: { uuids: string[] } }>(
     }
 )
 
+if (!process.env.DATABASE_HOST)
+    throw new Error('DATABASE_HOST must be provided in env variables')
+
+if (!process.env.DATABASE_PORT)
+    throw new Error('DATABASE_PORT must be provided in env variables')
+
+if (!process.env.DATABASE_DATABASE)
+    throw new Error('DATABASE_DATABASE must be provided in env variables')
+
+if (!process.env.DATABASE_USER)
+    throw new Error('DATABASE_USER must be provided in env variables')
+
+if (!process.env.DATABASE_PASSWORD)
+    throw new Error('DATABASE_PASSWORD must be provided in env variables')
+
+fastify.register(fastifyPostgres, {
+    host: process.env.DATABASE_HOST,
+    port: +process.env.DATABASE_PORT,
+    database: process.env.DATABASE_DATABASE,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD
+})
+
 export const start = async (host: string, port: number) => {
     try {
         await fastify.listen({ host, port })
         fastify.log.info('Server started')
-    } catch (err) {
-        fastify.log.error(err)
+    } catch (error: any) {
+        fastify.log.error(error)
         process.exit(1)
     }
 }

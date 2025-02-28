@@ -1,11 +1,11 @@
 import 'dotenv/config'
 import cliProgress from 'cli-progress'
 
-import type { PrismaClient } from '@prisma/client'
 import { createGeoLocation } from '@prisma/client/sql'
 
 import { transformDeliveryPointsToPrismaObjectBatch } from '../utils/transformers'
 
+import type { PrismaClient } from '@prisma/client'
 import type { CdekApi } from '../../types/CdekApi'
 import type { CdekDeliveryPoint } from '../../types/CdekDeliveryPoint'
 
@@ -15,10 +15,22 @@ export default class DeliveryPointsUpdater {
 
     #deliveryPoints: CdekDeliveryPoint[] | undefined
 
-    #batchSize = 50
+    #batchSize: number
 
-    constructor(cdekApi: CdekApi, prisma: PrismaClient) {
-        ;[this.#cdekApi, this.#prisma] = [cdekApi, prisma]
+    #writeLogs: boolean
+
+    constructor(
+        cdekApi: CdekApi,
+        prisma: PrismaClient,
+        writeLogs: boolean = false,
+        batchSize = 50
+    ) {
+        ;[this.#cdekApi, this.#prisma, this.#writeLogs, this.#batchSize] = [
+            cdekApi,
+            prisma,
+            writeLogs,
+            batchSize
+        ]
     }
 
     async #batchCreateDeliveryPoints(batch: CdekDeliveryPoint[]): Promise<number> {
@@ -62,7 +74,8 @@ export default class DeliveryPointsUpdater {
 
     // Synchronize delivery points with the database.
     async #syncDeliveryPoints() {
-        console.log('Calculating diff between data from api and database...')
+        if (this.#writeLogs)
+            console.log('Calculating diff between data from api and database...')
 
         // Ensure feed exists
         const feedUuids = new Set(this.#deliveryPoints?.map((dp) => dp.uuid))
@@ -90,10 +103,10 @@ export default class DeliveryPointsUpdater {
         const deliveryPointsToUpdate =
             this.#deliveryPoints?.filter((dp) => uuidsToUpdate.has(dp.uuid)) ?? []
 
-        console.log('Diff calculated')
+        if (this.#writeLogs) console.log('Diff calculated')
 
         if (deliveryPointsToCreate.length) {
-            console.log('Creating delivery points...')
+            if (this.#writeLogs) console.log('Creating delivery points...')
 
             const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
             bar.start(deliveryPointsToCreate.length, 0)
@@ -110,11 +123,11 @@ export default class DeliveryPointsUpdater {
 
             bar.stop()
         } else {
-            console.log('No delivery points to create')
+            if (this.#writeLogs) console.log('No delivery points to create')
         }
 
         if (deliveryPointsToUpdate.length) {
-            console.log('Updating delivery points...')
+            if (this.#writeLogs) console.log('Updating delivery points...')
 
             const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic)
             bar.start(deliveryPointsToUpdate.length, 0)
@@ -136,7 +149,7 @@ export default class DeliveryPointsUpdater {
 
             bar.stop()
         } else {
-            console.log('No delivery points to update')
+            if (this.#writeLogs) console.log('No delivery points to update')
         }
 
         if (uuidsToDelete.size) {
@@ -144,14 +157,15 @@ export default class DeliveryPointsUpdater {
                 where: { uuid: { in: [...uuidsToDelete] } }
             })
 
-            console.log(
-                `Deleted ${uuidsToDelete.size}/${uuidsToDelete.size} delivery points`
-            )
+            if (this.#writeLogs)
+                console.log(
+                    `Deleted ${uuidsToDelete.size}/${uuidsToDelete.size} delivery points`
+                )
         } else {
-            console.log('No delivery points to delete')
+            if (this.#writeLogs) console.log('No delivery points to delete')
         }
 
-        console.log('Sync complete')
+        if (this.#writeLogs) console.log('Sync complete')
 
         return { status: 'success' }
     }
