@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import fastifyPostgres from '@fastify/postgres'
 import QueryStream from 'pg-query-stream'
-import { stringify } from 'jsonstream'
+import jsonstream from 'jsonstream'
 import 'dotenv/config'
 
 import { getGeoLocations } from '@prisma/client/sql'
@@ -41,16 +41,17 @@ fastify.get<{
     const query = new QueryStream(
         sql,
         [minLongitude, minLatitude, maxLongitude, maxLatitude],
-        { highWaterMark: 50 }
+        { batchSize: 100, highWaterMark: 100 }
     )
 
     const stream = pgClient.query(query)
+
     stream.on('end', () => {
         pgClient.release()
     })
 
     reply.header('Content-Type', 'application/octet-stream')
-    return reply.send(stream.pipe(stringify()))
+    return reply.send(stream.pipe(jsonstream.stringify()))
 })
 
 fastify.get<{ Params: { uuid: string } }>(
