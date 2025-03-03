@@ -1,0 +1,46 @@
+model DeliveryPoint {
+    uuid String @id @db.Uuid
+
+    code                String
+    name                String
+    addressComment      String?
+    nearestStation      String?
+    nearestMetroStation String?
+    workTime            String
+
+    phones Phone[]
+
+    email     String?
+    note      String?
+    type      String
+    ownerCode String
+
+    takeOnly              Boolean
+    isHandout             Boolean
+    isReception           Boolean
+    isDressingRoom        Boolean
+    isMarketplace         Boolean?
+    isLtl                 Boolean?
+    haveCashless          Boolean
+    haveCash              Boolean
+    haveFastPaymentSystem Boolean
+    allowedCod            Boolean
+
+    site String?
+
+    officeImages       OfficeImage[]
+    workTimes          WorkTime[]
+    workTimeExceptions WorkTimeException[]
+
+    weightMin Int?
+    weightMax Int?
+
+    dimensions Dimensions[]
+    location   Location?
+
+    distance Int?
+
+    fulfillment Boolean
+
+    geoData GeoData?
+}

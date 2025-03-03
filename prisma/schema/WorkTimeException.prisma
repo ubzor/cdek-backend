@@ -1,0 +1,12 @@
+model WorkTimeException {
+    uuid String @id @default(uuid()) @db.Uuid
+
+    dateStart String
+    dateEnd   String
+    timeStart String?
+    timeEnd   String?
+    isWorking Boolean
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @db.Uuid
+}

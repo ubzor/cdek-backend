@@ -1,0 +1,9 @@
+model WorkTime {
+    uuid String @id @default(uuid()) @db.Uuid
+
+    day  Int
+    time String
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @db.Uuid
+}

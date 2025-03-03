@@ -1,0 +1,9 @@
+model OfficeImage {
+    uuid String @id @default(uuid()) @db.Uuid
+
+    number Int?
+    url    String
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @db.Uuid
+}

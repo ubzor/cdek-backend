@@ -1,0 +1,8 @@
+model GeoData {
+    uuid String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+
+    coordinates Unsupported("geography(Point, 4326)")
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @unique @db.Uuid
+}

@@ -3,7 +3,6 @@
 -- @param {Float} $3:$maxLongitude
 -- @param {Float} $4:$maxLatitude
 SELECT "deliveryPointId",
-    ST_AsText(coordinates) as coordinates,
     ST_X(coordinates::geometry) as longitude,
     ST_Y(coordinates::geometry) as latitude
 FROM "GeoData"

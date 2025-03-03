@@ -1,0 +1,19 @@
+model Location {
+    uuid String @id @default(uuid()) @db.Uuid
+
+    countryCode String
+    regionCode  Int
+    region      String?
+    cityCode    Int
+    city        String
+    fiasGuid    String?
+    postalCode  String?
+    longitude   Float
+    latitude    Float
+    address     String
+    addressFull String
+    cityUuid    String?
+
+    deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
+    deliveryPointId String        @unique @db.Uuid
+}
