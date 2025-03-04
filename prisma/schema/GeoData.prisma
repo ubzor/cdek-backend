@@ -5,4 +5,6 @@ model GeoData {
 
     deliveryPoint   DeliveryPoint @relation(fields: [deliveryPointId], references: [uuid], onDelete: Cascade)
     deliveryPointId String        @unique @db.Uuid
+
+    @@index([coordinates], name: "geo_data_coordinates_index")
 }

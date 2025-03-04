@@ -20,6 +20,8 @@ const updater = new DeliveryPointsUpdater(
     process.env.UPDATER_BATCH_SIZE ? +process.env.UPDATER_BATCH_SIZE : undefined
 )
 
+if (process.env.UPDATER_RUN_ON_START === 'true') updater.run()
+
 cron.schedule(
     process.env.UPDATER_CRON_SCHEDULE ?? '0 0 * * *',
     async () => await updater.run(),
