@@ -46,9 +46,13 @@ export const boundingBoxValidationSchema = z.object({
     maxLatitude: latitudeValidationSchema
 })
 
+export const codeValidationSchema = z.object({
+    code: z.string().min(1)
+})
+
 export const uuidValidationSchema = z.string().uuid('Must be valid uuid')
 
-export const deliveryPointValidationSchema = z.object({
+export const deliveryPointIdValidationSchema = z.object({
     uuid: uuidValidationSchema
 })
 

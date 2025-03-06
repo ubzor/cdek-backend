@@ -9,8 +9,9 @@ import { getGeoLocations } from '@prisma/client/sql'
 import {
     validateObject,
     boundingBoxValidationSchema,
-    deliveryPointValidationSchema,
-    deliveryPointsValidationSchema
+    deliveryPointIdValidationSchema,
+    deliveryPointsValidationSchema,
+    codeValidationSchema
 } from './utils/validation'
 import prisma from './prisma'
 
@@ -54,11 +55,48 @@ fastify.get<{
     return reply.send(stream.pipe(jsonstream.stringify()))
 })
 
+fastify.get<{ Params: { code: string } }>(
+    '/delivery-points/code/:code',
+    async (request, reply) => {
+        const { data, error } = validateObject(codeValidationSchema, request.params)
+
+        if (error) {
+            reply.code(400)
+            return error
+        }
+
+        const deliveryPoint = await prisma.deliveryPoint.findUnique({
+            where: { code: data.code },
+            select: {
+                uuid: true,
+                code: true,
+                workTime: true,
+                type: true,
+                location: {
+                    select: {
+                        city: true,
+                        address: true,
+                        latitude: true,
+                        longitude: true
+                    }
+                }
+            }
+        })
+
+        if (!deliveryPoint) {
+            reply.code(404)
+            return { error: 'Delivery point not found' }
+        }
+
+        return deliveryPoint
+    }
+)
+
 fastify.get<{ Params: { uuid: string } }>(
     '/delivery-points/:uuid',
     async (request, reply) => {
         const { data, error } = validateObject(
-            deliveryPointValidationSchema,
+            deliveryPointIdValidationSchema,
             request.params
         )
 
@@ -69,13 +107,17 @@ fastify.get<{ Params: { uuid: string } }>(
 
         const deliveryPoint = await prisma.deliveryPoint.findUnique({
             where: { uuid: data.uuid },
-            include: {
-                dimensions: true,
-                location: true,
-                workTimes: true,
-                workTimeExceptions: true,
-                phones: true,
-                officeImages: true
+            select: {
+                uuid: true,
+                code: true,
+                workTime: true,
+                type: true,
+                location: {
+                    select: {
+                        city: true,
+                        address: true
+                    }
+                }
             }
         })
 

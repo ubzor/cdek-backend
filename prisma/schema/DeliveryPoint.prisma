@@ -1,7 +1,7 @@
 model DeliveryPoint {
     uuid String @id @db.Uuid
 
-    code                String
+    code                String  @unique
     name                String
     addressComment      String?
     nearestStation      String?
@@ -43,4 +43,6 @@ model DeliveryPoint {
     fulfillment Boolean
 
     geoData GeoData?
+
+    @@index([code], name: "delivery_point_code_index")
 }
