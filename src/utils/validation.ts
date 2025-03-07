@@ -57,5 +57,5 @@ export const deliveryPointIdValidationSchema = z.object({
 })
 
 export const deliveryPointsValidationSchema = z.object({
-    uuids: z.array(uuidValidationSchema)
+    uuids: z.union([uuidValidationSchema, z.array(uuidValidationSchema)])
 })

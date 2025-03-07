@@ -130,7 +130,7 @@ fastify.get<{ Params: { uuid: string } }>(
     }
 )
 
-fastify.get<{ Querystring: { uuids: string[] } }>(
+fastify.get<{ Querystring: { uuids: string | string[] } }>(
     '/delivery-points/array',
     async (request, reply) => {
         const { data, error } = validateObject<typeof deliveryPointsValidationSchema>(
@@ -144,14 +144,23 @@ fastify.get<{ Querystring: { uuids: string[] } }>(
         }
 
         const deliveryPoints = await prisma.deliveryPoint.findMany({
-            where: { uuid: { in: data.uuids } },
-            include: {
-                dimensions: true,
-                location: true,
-                workTimes: true,
-                workTimeExceptions: true,
-                phones: true,
-                officeImages: true
+            where: {
+                uuid: {
+                    ...(typeof data.uuids !== 'string' && { in: data.uuids }),
+                    ...(typeof data.uuids === 'string' && { equals: data.uuids })
+                }
+            },
+            select: {
+                uuid: true,
+                code: true,
+                workTime: true,
+                type: true,
+                location: {
+                    select: {
+                        city: true,
+                        address: true
+                    }
+                }
             }
         })
 
