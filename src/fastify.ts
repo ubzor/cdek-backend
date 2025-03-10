@@ -35,9 +35,25 @@ fastify.get<{
 
     const pgClient = await fastify.pg.connect()
 
-    const { minLongitude, minLatitude, maxLongitude, maxLatitude } = data
+    const {
+        minLongitude,
+        minLatitude,
+        maxLongitude,
+        maxLatitude,
+        isPickupPoint,
+        isPostamat,
+        hasCash,
+        hasCard,
+        hasFittingRoom
+    } = data
 
-    const sql = getGeoLocations(minLongitude, minLatitude, maxLongitude, maxLatitude).sql
+    let sql = getGeoLocations(minLongitude, minLatitude, maxLongitude, maxLatitude).sql
+
+    if (isPickupPoint === false) sql += ` AND dp."type" = 'PVZ'`
+    if (isPostamat === false) sql += ` AND dp."type" = 'POSTAMAT'`
+    if (hasCash === false) sql += ` AND dp."haveCash" = false`
+    if (hasCard === false) sql += ` AND dp."haveCashless" = false`
+    if (hasFittingRoom === false) sql += ` AND dp."isDressingRoom" = false`
 
     const query = new QueryStream(
         sql,

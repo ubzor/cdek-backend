@@ -39,11 +39,29 @@ export const latitudeValidationSchema = z
     .transform(transformStringToFloat)
     .refine((value) => value >= -90 && value <= 90, 'Must be between -90 and 90')
 
+export const booleanValidationSchema = z.string().transform((value, context) => {
+    if (value === 'true') return true
+    if (value === 'false') return false
+
+    context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Not a boolean'
+    })
+
+    return z.NEVER
+})
+
 export const boundingBoxValidationSchema = z.object({
     minLongitude: longitudeValidationSchema,
     maxLongitude: longitudeValidationSchema,
     minLatitude: latitudeValidationSchema,
-    maxLatitude: latitudeValidationSchema
+    maxLatitude: latitudeValidationSchema,
+
+    isPickupPoint: booleanValidationSchema.optional(),
+    isPostamat: booleanValidationSchema.optional(),
+    hasCash: booleanValidationSchema.optional(),
+    hasCard: booleanValidationSchema.optional(),
+    hasFittingRoom: booleanValidationSchema.optional()
 })
 
 export const codeValidationSchema = z.object({
