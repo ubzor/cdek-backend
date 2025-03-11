@@ -53,7 +53,7 @@ fastify.get<{
     if (isPostamat === false) sql += ` AND dp."type" = 'POSTAMAT'`
     if (hasCash === false) sql += ` AND dp."haveCash" = false`
     if (hasCard === false) sql += ` AND dp."haveCashless" = false`
-    if (hasFittingRoom === false) sql += ` AND dp."isDressingRoom" = false`
+    if (hasFittingRoom === true) sql += ` AND dp."isDressingRoom" = true`
 
     const query = new QueryStream(
         sql,
