@@ -126,11 +126,15 @@ fastify.get<{ Params: { uuid: string } }>(
             select: {
                 uuid: true,
                 code: true,
+
                 workTime: true,
                 type: true,
+                addressComment: true,
+
                 haveCash: true,
                 haveCashless: true,
                 isDressingRoom: true,
+
                 location: {
                     select: {
                         city: true,
