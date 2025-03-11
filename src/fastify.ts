@@ -128,6 +128,9 @@ fastify.get<{ Params: { uuid: string } }>(
                 code: true,
                 workTime: true,
                 type: true,
+                haveCash: true,
+                haveCashless: true,
+                isDressingRoom: true,
                 location: {
                     select: {
                         city: true,
