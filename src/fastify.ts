@@ -1,4 +1,5 @@
 import Fastify from 'fastify'
+import cors from '@fastify/cors'
 import fastifyPostgres from '@fastify/postgres'
 import QueryStream from 'pg-query-stream'
 import jsonstream from 'jsonstream'
@@ -191,31 +192,39 @@ fastify.get<{ Querystring: { uuids: string | string[] } }>(
     }
 )
 
-if (!process.env.DATABASE_HOST)
-    throw new Error('DATABASE_HOST must be provided in env variables')
-
-if (!process.env.DATABASE_PORT)
-    throw new Error('DATABASE_PORT must be provided in env variables')
-
-if (!process.env.DATABASE_DATABASE)
-    throw new Error('DATABASE_DATABASE must be provided in env variables')
-
-if (!process.env.DATABASE_USER)
-    throw new Error('DATABASE_USER must be provided in env variables')
-
-if (!process.env.DATABASE_PASSWORD)
-    throw new Error('DATABASE_PASSWORD must be provided in env variables')
-
-fastify.register(fastifyPostgres, {
-    host: process.env.DATABASE_HOST,
-    port: +process.env.DATABASE_PORT,
-    database: process.env.DATABASE_DATABASE,
-    user: process.env.DATABASE_USER,
-    password: process.env.DATABASE_PASSWORD
-})
+// Removed top-level await for cors and fastifyPostgres registration
 
 export const start = async (host: string, port: number) => {
+    if (!process.env.DATABASE_HOST)
+        throw new Error('DATABASE_HOST must be provided in env variables')
+
+    if (!process.env.DATABASE_PORT)
+        throw new Error('DATABASE_PORT must be provided in env variables')
+
+    if (!process.env.DATABASE_DATABASE)
+        throw new Error('DATABASE_DATABASE must be provided in env variables')
+
+    if (!process.env.DATABASE_USER)
+        throw new Error('DATABASE_USER must be provided in env variables')
+
+    if (!process.env.DATABASE_PASSWORD)
+        throw new Error('DATABASE_PASSWORD must be provided in env variables')
+
     try {
+        // Register plugins inside the async start function
+        await fastify.register(cors, {
+            origin: process.env.ALLOWED_REFERRERS?.split(',')
+        })
+        fastify.register(fastifyPostgres, {
+            host: process.env.DATABASE_HOST,
+            port: +process.env.DATABASE_PORT,
+            database: process.env.DATABASE_DATABASE,
+            user: process.env.DATABASE_USER,
+            password: process.env.DATABASE_PASSWORD
+        })
+        // Wait until all plugins are registered
+        await fastify.ready()
+
         await fastify.listen({ host, port })
         fastify.log.info('Server started')
     } catch (error: any) {

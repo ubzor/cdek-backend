@@ -143,6 +143,14 @@
     ajv-formats "^3.0.1"
     fast-uri "^3.0.0"
 
+"@fastify/cors@^11.0.0":
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/cors/-/cors-11.0.0.tgz#acf0b6c2cfaf570fb7b7bf55f5468f9fd20da84a"
+  integrity sha512-41Bx0LVGr2a6DnnhDN/SgfDlTRNZtEs8niPxyoymV6Hw09AIdz/9Rn/0Fpu+pBOs6kviwS44JY2mB8NcU2qSAA==
+  dependencies:
+    fastify-plugin "^5.0.0"
+    mnemonist "0.40.0"
+
 "@fastify/error@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@fastify/error/-/error-4.0.0.tgz#7842d6161fbce78953638318be99033a0c2d5070"
@@ -764,6 +772,13 @@ mkdirp@^1.0.4:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-1.0.4.tgz#3eb5ed62622756d79a5f0e2a221dfebad75c2f7e"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
 
+mnemonist@0.40.0:
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/mnemonist/-/mnemonist-0.40.0.tgz#72e866d7f1e261d0c589717ff2bcfd6feb802db2"
+  integrity sha512-kdd8AFNig2AD5Rkih7EPCXhu/iMvwevQFX/uEiGhZyPZi7fHqOoF4V4kHLpCfysxXMgQ4B52kdPMCwARshKvEg==
+  dependencies:
+    obliterator "^2.0.4"
+
 ms@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
@@ -780,6 +795,11 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
+
+obliterator@^2.0.4:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/obliterator/-/obliterator-2.0.5.tgz#031e0145354b0c18840336ae51d41e7d6d2c76aa"
+  integrity sha512-42CPE9AhahZRsMNslczq0ctAEtqk8Eka26QofnqC346BZdHDySk3LWka23LI7ULIw11NmltpiLagIq8gBozxTw==
 
 obuf@~1.1.2:
   version "1.1.2"
