@@ -22,7 +22,11 @@ fastify.get<{
     Querystring: Record<
         'minLongitude' | 'minLatitude' | 'maxLongitude' | 'maxLatitude',
         string
-    >
+    > &
+        Record<
+            'isPickupPoint' | 'isPostamat' | 'hasCash' | 'hasCard' | 'hasFittingRoom',
+            string | undefined
+        >
 }>('/delivery-points/bounding-box', async (request, reply) => {
     const { data, error } = validateObject<typeof boundingBoxValidationSchema>(
         boundingBoxValidationSchema,
@@ -72,10 +76,13 @@ fastify.get<{
     return reply.send(stream.pipe(jsonstream.stringify()))
 })
 
-fastify.get<{ Params: { code: string } }>(
+fastify.get<{ Params: { code: string }; Querystring: { allFields: string | undefined } }>(
     '/delivery-points/code/:code',
     async (request, reply) => {
-        const { data, error } = validateObject(codeValidationSchema, request.params)
+        const { data, error } = validateObject(codeValidationSchema, {
+            ...request.params,
+            ...request.query
+        })
 
         if (error) {
             reply.code(400)
@@ -84,20 +91,32 @@ fastify.get<{ Params: { code: string } }>(
 
         const deliveryPoint = await prisma.deliveryPoint.findUnique({
             where: { code: data.code },
-            select: {
-                uuid: true,
-                code: true,
-                workTime: true,
-                type: true,
-                location: {
-                    select: {
-                        city: true,
-                        address: true,
-                        latitude: true,
-                        longitude: true
+            ...(data.allFields && {
+                include: {
+                    dimensions: true,
+                    location: true,
+                    workTimes: true,
+                    workTimeExceptions: true,
+                    phones: true,
+                    officeImages: true
+                }
+            }),
+            ...(!data.allFields && {
+                select: {
+                    uuid: true,
+                    code: true,
+                    workTime: true,
+                    type: true,
+                    location: {
+                        select: {
+                            city: true,
+                            address: true,
+                            latitude: true,
+                            longitude: true
+                        }
                     }
                 }
-            }
+            })
         })
 
         if (!deliveryPoint) {
@@ -109,13 +128,13 @@ fastify.get<{ Params: { code: string } }>(
     }
 )
 
-fastify.get<{ Params: { uuid: string } }>(
+fastify.get<{ Params: { uuid: string }; Querystring: { allFields: string | undefined } }>(
     '/delivery-points/:uuid',
     async (request, reply) => {
-        const { data, error } = validateObject(
-            deliveryPointIdValidationSchema,
-            request.params
-        )
+        const { data, error } = validateObject(deliveryPointIdValidationSchema, {
+            ...request.params,
+            ...request.query
+        })
 
         if (error) {
             reply.code(400)
@@ -124,25 +143,37 @@ fastify.get<{ Params: { uuid: string } }>(
 
         const deliveryPoint = await prisma.deliveryPoint.findUnique({
             where: { uuid: data.uuid },
-            select: {
-                uuid: true,
-                code: true,
+            ...(data.allFields && {
+                include: {
+                    dimensions: true,
+                    location: true,
+                    workTimes: true,
+                    workTimeExceptions: true,
+                    phones: true,
+                    officeImages: true
+                }
+            }),
+            ...(!data.allFields && {
+                select: {
+                    uuid: true,
+                    code: true,
 
-                workTime: true,
-                type: true,
-                addressComment: true,
+                    workTime: true,
+                    type: true,
+                    addressComment: true,
 
-                haveCash: true,
-                haveCashless: true,
-                isDressingRoom: true,
+                    haveCash: true,
+                    haveCashless: true,
+                    isDressingRoom: true,
 
-                location: {
-                    select: {
-                        city: true,
-                        address: true
+                    location: {
+                        select: {
+                            city: true,
+                            address: true
+                        }
                     }
                 }
-            }
+            })
         })
 
         if (!deliveryPoint) {

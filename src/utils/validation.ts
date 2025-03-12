@@ -65,13 +65,15 @@ export const boundingBoxValidationSchema = z.object({
 })
 
 export const codeValidationSchema = z.object({
-    code: z.string().min(1)
+    code: z.string().min(1),
+    allFields: booleanValidationSchema.optional()
 })
 
 export const uuidValidationSchema = z.string().uuid('Must be valid uuid')
 
 export const deliveryPointIdValidationSchema = z.object({
-    uuid: uuidValidationSchema
+    uuid: uuidValidationSchema,
+    allFields: booleanValidationSchema.optional()
 })
 
 export const deliveryPointsValidationSchema = z.object({
