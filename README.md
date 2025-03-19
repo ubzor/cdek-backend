@@ -1,19 +1,14 @@
 # CDEK Backend
 
-Backend на Fastify с использованием Prisma и SQLite (Turso).
+Backend для [cdek-widget](https://github.com/ubzor/cdek-widget) на Fastify с использованием Prisma и Postgres/Postgis
 
 ## Установка
 
 1. Клонируйте репозиторий.
-2. Выполните `npm install`.
-3. Создайте файл `.env` на основе примера.
-4. Примените миграции Prisma: `npx prisma migrate dev --name init`.
+2. Создайте файл `.env` на основе `.env.example`.
+3. Выполните `yarn`.
 
 ## Запуск
 
--   В режиме разработки: `npm run dev`
--   Для сборки: `npm run build` и затем `npm start`.
-
-## Деплой на Vercel
-
-Vercel будет использовать `vercel.json` для сборки и маршрутизации.
+-   В режиме разработки: `yarn dev`
+-   Для продакшна: `yarn build` и затем `yarn start`.
