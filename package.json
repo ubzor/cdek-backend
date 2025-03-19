@@ -1,6 +1,6 @@
 {
     "name": "cdek-backend",
-    "version": "0.0.14",
+    "version": "0.0.15",
     "license": "MIT",
     "engines": {
         "node": ">=22.12.0"
@@ -9,7 +9,7 @@
         "dev": "ts-node-dev src/app.ts",
         "build": "tsc",
         "start": "node build/src/app.js",
-        "postinstall": "prisma generate && prisma generate --sql && prisma migrate dev"
+        "postinstall": "prisma migrate dev && prisma generate && prisma generate --sql"
     },
     "dependencies": {
         "@fastify/cors": "^11.0.0",
