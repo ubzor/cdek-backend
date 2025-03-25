@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import cron from 'node-cron'
 
 import prisma from './prisma'
@@ -6,6 +6,8 @@ import cdekApi from './cdekApi'
 import { start } from './fastify'
 
 import DeliveryPointsUpdater from './classes/DeliveryPointsUpdater'
+
+if (process.env.NODE_ENV !== 'production') dotenv.config()
 
 if (!process.env.SERVER_HOST)
     throw new Error('SERVER_HOST must be provided in env variables')

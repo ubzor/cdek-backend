@@ -1,6 +1,6 @@
 {
     "name": "cdek-backend",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "license": "MIT",
     "engines": {
         "node": ">=22.8.0"
