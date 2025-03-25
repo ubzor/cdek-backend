@@ -1,7 +1,11 @@
 import { z } from 'zod'
-import { zu } from 'zod_utilz'
 
-export const validateObject = <T extends z.AnyZodObject>(schema: T, object: any) => {
+export const validateObject = async <T extends z.AnyZodObject>(
+    schema: T,
+    object: any
+) => {
+    const { zu } = await import('zod_utilz')
+
     const { data, error } = zu.SPR(schema.safeParse(object))
 
     return {

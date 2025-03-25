@@ -1,9 +1,9 @@
 {
     "name": "cdek-backend",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "license": "MIT",
     "engines": {
-        "node": ">=22.12.0"
+        "node": ">=22.8.0"
     },
     "scripts": {
         "dev": "ts-node-dev src/app.ts",

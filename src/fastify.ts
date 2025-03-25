@@ -28,7 +28,7 @@ fastify.get<{
             string | undefined
         >
 }>('/delivery-points/bounding-box', async (request, reply) => {
-    const { data, error } = validateObject<typeof boundingBoxValidationSchema>(
+    const { data, error } = await validateObject<typeof boundingBoxValidationSchema>(
         boundingBoxValidationSchema,
         request.query
     )
@@ -79,7 +79,7 @@ fastify.get<{
 fastify.get<{ Params: { code: string }; Querystring: { allFields: string | undefined } }>(
     '/delivery-points/code/:code',
     async (request, reply) => {
-        const { data, error } = validateObject(codeValidationSchema, {
+        const { data, error } = await validateObject(codeValidationSchema, {
             ...request.params,
             ...request.query
         })
@@ -131,7 +131,7 @@ fastify.get<{ Params: { code: string }; Querystring: { allFields: string | undef
 fastify.get<{ Params: { uuid: string }; Querystring: { allFields: string | undefined } }>(
     '/delivery-points/:uuid',
     async (request, reply) => {
-        const { data, error } = validateObject(deliveryPointIdValidationSchema, {
+        const { data, error } = await validateObject(deliveryPointIdValidationSchema, {
             ...request.params,
             ...request.query
         })
@@ -188,10 +188,9 @@ fastify.get<{ Params: { uuid: string }; Querystring: { allFields: string | undef
 fastify.get<{ Querystring: { uuids: string | string[] } }>(
     '/delivery-points/array',
     async (request, reply) => {
-        const { data, error } = validateObject<typeof deliveryPointsValidationSchema>(
-            deliveryPointsValidationSchema,
-            request.query
-        )
+        const { data, error } = await validateObject<
+            typeof deliveryPointsValidationSchema
+        >(deliveryPointsValidationSchema, request.query)
 
         if (error) {
             reply.code(400)
