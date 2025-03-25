@@ -7,7 +7,7 @@ import { start } from './fastify'
 
 import DeliveryPointsUpdater from './classes/DeliveryPointsUpdater'
 
-if (process.env.NODE_ENV !== 'production') dotenv.config()
+dotenv.config()
 
 if (!process.env.SERVER_HOST)
     throw new Error('SERVER_HOST must be provided in env variables')
