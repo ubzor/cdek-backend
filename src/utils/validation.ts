@@ -4,13 +4,22 @@ export const validateObject = async <T extends z.AnyZodObject>(
     schema: T,
     object: any
 ) => {
-    const { zu } = await import('zod_utilz')
+    // Implement our own version of SPR functionality
+    const result = schema.safeParse(object)
 
-    const { data, error } = zu.SPR(schema.safeParse(object))
-
-    return {
-        data: data as z.infer<T>,
-        error: error ? { ...error, message: JSON.parse(error.message) } : undefined
+    if (result.success) {
+        return {
+            data: result.data as z.infer<T>,
+            error: undefined
+        }
+    } else {
+        return {
+            data: undefined,
+            error: {
+                ...result.error,
+                message: JSON.parse(result.error.message)
+            }
+        }
     }
 }
 

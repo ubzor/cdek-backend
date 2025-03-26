@@ -1,6 +1,6 @@
 {
     "name": "cdek-backend",
-    "version": "0.0.18",
+    "version": "0.0.19",
     "license": "MIT",
     "engines": {
         "node": ">=22.8.0"
@@ -23,8 +23,7 @@
         "node-cron": "^3.0.3",
         "pg": "^8.13.3",
         "pg-query-stream": "^4.7.3",
-        "zod": "^3.24.2",
-        "zod_utilz": "^0.8.3"
+        "zod": "^3.24.2"
     },
     "devDependencies": {
         "@types/cli-progress": "^3.11.6",
