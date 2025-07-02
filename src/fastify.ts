@@ -16,7 +16,7 @@ import {
 } from './utils/validation'
 import prisma from './prisma'
 
-const fastify = Fastify({ logger: process.env.NODE_ENV !== 'production' })
+const fastify = Fastify({ logger: process.env.DISPLAY_LOGS === 'true' })
 
 fastify.get<{
     Querystring: Record<

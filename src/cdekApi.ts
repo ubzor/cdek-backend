@@ -11,7 +11,7 @@ if (!process.env.CDEK_CLIENT_SECRET)
 const cdekApi = new CdekApi(
     process.env.CDEK_CLIENT_ID,
     process.env.CDEK_CLIENT_SECRET,
-    process.env.NODE_ENV !== 'production'
+    process.env.DISPLAY_LOGS === 'true'
 )
 
 export default cdekApi

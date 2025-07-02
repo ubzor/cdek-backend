@@ -18,7 +18,7 @@ if (!process.env.SERVER_PORT)
 const updater = new DeliveryPointsUpdater(
     cdekApi,
     prisma,
-    process.env.NODE_ENV !== 'production',
+    process.env.DISPLAY_LOGS === 'true',
     process.env.UPDATER_BATCH_SIZE ? +process.env.UPDATER_BATCH_SIZE : undefined
 )
 
